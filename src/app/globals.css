@@ -14,16 +14,14 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --muted: #171717;
-    --muted-foreground: #a3a3a3;
-    --border: #262626;
-    --accent: #262626;
-    --accent-foreground: #fafafa;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --muted: #171717;
+  --muted-foreground: #a3a3a3;
+  --border: #262626;
+  --accent: #262626;
+  --accent-foreground: #fafafa;
 }
 
 * {

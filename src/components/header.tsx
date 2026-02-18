@@ -2,9 +2,32 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
+
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return <div className="h-8 w-8" />;
+  }
+
+  return (
+    <button
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+      aria-label="Toggle theme"
+    >
+      {resolvedTheme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+    </button>
+  );
+}
 
 export function Header() {
   const pathname = usePathname();
@@ -34,33 +57,37 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <ThemeToggle />
         </nav>
 
-        {/* Mobile Toggle */}
-        <button
-          className="flex flex-col gap-1.5 md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          <span
-            className={cn(
-              "h-px w-6 bg-foreground transition-transform",
-              mobileOpen && "translate-y-[7px] rotate-45"
-            )}
-          />
-          <span
-            className={cn(
-              "h-px w-6 bg-foreground transition-opacity",
-              mobileOpen && "opacity-0"
-            )}
-          />
-          <span
-            className={cn(
-              "h-px w-6 bg-foreground transition-transform",
-              mobileOpen && "-translate-y-[7px] -rotate-45"
-            )}
-          />
-        </button>
+        {/* Mobile: Theme Toggle + Hamburger */}
+        <div className="flex items-center gap-3 md:hidden">
+          <ThemeToggle />
+          <button
+            className="flex flex-col gap-1.5"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            <span
+              className={cn(
+                "h-px w-6 bg-foreground transition-transform",
+                mobileOpen && "translate-y-[7px] rotate-45"
+              )}
+            />
+            <span
+              className={cn(
+                "h-px w-6 bg-foreground transition-opacity",
+                mobileOpen && "opacity-0"
+              )}
+            />
+            <span
+              className={cn(
+                "h-px w-6 bg-foreground transition-transform",
+                mobileOpen && "-translate-y-[7px] -rotate-45"
+              )}
+            />
+          </button>
+        </div>
       </div>
 
       {/* Mobile Nav */}
