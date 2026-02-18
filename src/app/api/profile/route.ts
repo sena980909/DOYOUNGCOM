@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isAdminKey } from "@/lib/admin";
 import { getStoredProfile, saveProfile } from "@/lib/storage";
 
@@ -17,5 +18,9 @@ export async function PUT(request: NextRequest) {
 
   const profile = await request.json();
   await saveProfile(profile);
+
+  revalidatePath("/");
+  revalidatePath("/about");
+
   return NextResponse.json({ ok: true });
 }

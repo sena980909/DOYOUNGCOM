@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isAdminKey } from "@/lib/admin";
 import { getStoredProjects, saveProjects } from "@/lib/storage";
 
@@ -17,5 +18,9 @@ export async function PUT(request: NextRequest) {
 
   const projects = await request.json();
   await saveProjects(projects);
+
+  revalidatePath("/projects");
+  revalidatePath("/");
+
   return NextResponse.json({ ok: true });
 }
