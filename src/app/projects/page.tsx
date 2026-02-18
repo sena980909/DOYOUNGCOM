@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getNotionProjects } from "@/lib/notion";
-import { projects as fallbackProjects } from "@/lib/projects";
+import { getStoredProjects } from "@/lib/storage";
 
 export const revalidate = 60;
 
@@ -11,8 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const notionProjects = await getNotionProjects();
-  const projects = notionProjects.length > 0 ? notionProjects : fallbackProjects;
+  const projects = await getStoredProjects();
 
   return (
     <div className="py-24">

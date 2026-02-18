@@ -2,11 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getNotionProjects, getNotionProjectBySlug } from "@/lib/notion";
-import {
-  projects as fallbackProjects,
-  getProject as getFallbackProject,
-} from "@/lib/projects";
+import { getStoredProjects } from "@/lib/storage";
 
 export const revalidate = 60;
 
@@ -16,8 +12,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const notionProject = await getNotionProjectBySlug(slug);
-  const project = notionProject ?? getFallbackProject(slug);
+  const projects = await getStoredProjects();
+  const project = projects.find((p) => p.slug === slug);
   if (!project) return {};
   return {
     title: `${project.title} — ${project.subtitle}`,
@@ -30,10 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
-
-  const notionProjects = await getNotionProjects();
-  const projects =
-    notionProjects.length > 0 ? notionProjects : fallbackProjects;
+  const projects = await getStoredProjects();
   const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
 
