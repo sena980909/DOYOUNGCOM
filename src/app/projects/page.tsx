@@ -45,14 +45,14 @@ export default async function ProjectsPage() {
               </>
             )}
 
-            <div className="relative flex h-full flex-col justify-end p-6">
-              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/60">
+            <div className="relative flex h-full flex-col justify-end p-4 sm:p-6">
+              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/60">
                 {project.number} — {project.category}
               </p>
-              <h2 className="mt-2 text-xl font-bold tracking-tight text-white">
+              <h2 className="mt-1 text-lg font-bold tracking-tight text-white sm:mt-2 sm:text-xl">
                 {project.title}
               </h2>
-              <p className="mt-1 text-sm text-white/80">
+              <p className="mt-1 text-xs text-white/80 sm:text-sm">
                 {project.subtitle}
               </p>
             </div>

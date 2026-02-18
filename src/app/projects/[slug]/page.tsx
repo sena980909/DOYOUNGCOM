@@ -158,38 +158,38 @@ export default async function ProjectDetailPage({ params }: Props) {
         {prev ? (
           <Link
             href={`/projects/${prev.slug}`}
-            className="group flex flex-col gap-1 bg-muted p-8 transition-colors hover:bg-accent"
+            className="group flex flex-col gap-1 bg-muted p-6 transition-colors hover:bg-accent sm:p-8"
           >
-            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
               &larr; Previous
             </span>
-            <span className="text-lg font-bold tracking-tight group-hover:underline">
+            <span className="text-base font-bold tracking-tight group-hover:underline sm:text-lg">
               {prev.title}
             </span>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground sm:text-sm">
               {prev.subtitle}
             </span>
           </Link>
         ) : (
-          <div />
+          <div className="hidden sm:block" />
         )}
         {next ? (
           <Link
             href={`/projects/${next.slug}`}
-            className="group flex flex-col gap-1 bg-muted p-8 text-right transition-colors hover:bg-accent"
+            className="group flex flex-col gap-1 bg-muted p-6 text-right transition-colors hover:bg-accent sm:p-8"
           >
-            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
               Next &rarr;
             </span>
-            <span className="text-lg font-bold tracking-tight group-hover:underline">
+            <span className="text-base font-bold tracking-tight group-hover:underline sm:text-lg">
               {next.title}
             </span>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground sm:text-sm">
               {next.subtitle}
             </span>
           </Link>
         ) : (
-          <div />
+          <div className="hidden sm:block" />
         )}
       </div>
     </div>

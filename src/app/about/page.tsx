@@ -20,7 +20,7 @@ export default async function ProfilePage() {
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground">
             Profile
           </p>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
             {profile.nameEn}
           </h1>
           <p className="mt-4 text-lg italic text-muted-foreground">
@@ -56,7 +56,7 @@ export default async function ProfilePage() {
           ))}
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <PhilosophyCard
             keyword="DO"
             description={profile.doDescription}
