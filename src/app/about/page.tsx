@@ -28,7 +28,7 @@ export default async function ProfilePage() {
           </p>
         </div>
         {profile.photo && (
-          <div className="relative h-32 w-32 shrink-0 overflow-hidden sm:h-48 sm:w-48">
+          <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full sm:h-48 sm:w-48">
             <Image
               src={profile.photo}
               alt={profile.name}
