@@ -11,6 +11,7 @@ export interface Project {
   whatIDid: string[];
   tools: string[];
   image: string;
+  content?: string;
 }
 
 export const projects: Project[] = [

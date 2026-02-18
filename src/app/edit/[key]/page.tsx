@@ -112,6 +112,7 @@ function ProjectsEditor({ adminKey }: { adminKey: string }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
+  const [rawContent, setRawContent] = useState(false);
 
   useEffect(() => {
     fetch("/api/projects")
@@ -158,6 +159,7 @@ function ProjectsEditor({ adminKey }: { adminKey: string }) {
       whatIDid: [],
       tools: [],
       image: "",
+      content: "",
       _new: true,
     });
   }
@@ -281,6 +283,37 @@ function ProjectsEditor({ adminKey }: { adminKey: string }) {
             value={editing.tools.join(", ")}
             onChange={(v) => setEditing({ ...editing, tools: v.split(",").map((s) => s.trim()).filter(Boolean) })}
           />
+
+          {/* ── Rich Content (WYSIWYG) ── */}
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Content (리치 텍스트)
+              </label>
+              <button
+                type="button"
+                onClick={() => setRawContent(!rawContent)}
+                className="text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {rawContent ? "Visual Editor" : "HTML Source"}
+              </button>
+            </div>
+            {rawContent ? (
+              <textarea
+                value={editing.content || ""}
+                onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+                rows={12}
+                className="w-full border border-border bg-background px-3 py-2 text-sm font-mono outline-none focus:border-foreground resize-y"
+                placeholder="<p>프로젝트 설명을 HTML로 작성...</p>"
+              />
+            ) : (
+              <BlogNovelEditor
+                key={`proj-${editing.slug}`}
+                initialHtml={editing.content || ""}
+                onHtmlChange={(html) => setEditing({ ...editing, content: html })}
+              />
+            )}
+          </div>
         </div>
 
         <button

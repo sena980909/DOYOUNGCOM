@@ -152,6 +152,15 @@ export default async function ProjectDetailPage({ params }: Props) {
             ))}
           </div>
         </section>
+
+        {project.content && (
+          <section className="mb-16">
+            <div
+              className="blog-content prose prose-neutral dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: project.content }}
+            />
+          </section>
+        )}
       </div>
 
       <div className="mt-20 grid gap-px border-t border-border pt-px sm:grid-cols-2">
