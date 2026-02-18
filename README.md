@@ -1,6 +1,6 @@
 <div align="center">
 
-# DOYOUNGCOM
+# DOYOUNG
 
 **Agility in Architecture**
 
@@ -12,7 +12,7 @@
 
 **Engineer's Logic, Designer's Sense.**
 
-[Live Site](https://doyoungcom.vercel.app)
+[Live Site](https://doyoung.vercel.app)
 
 </div>
 
@@ -20,7 +20,7 @@
 
 ## 1. 프로젝트 소개
 
-**DOYOUNGCOM**은 건축학과 학생의 포트폴리오 겸 개인 브랜드 웹사이트입니다.
+**DOYOUNG**은 건축학과 학생의 포트폴리오 겸 개인 브랜드 웹사이트입니다.
 
 단순한 프로젝트 나열이 아닌, **건축 철학(매니페스토)** 을 전면에 내세우고 — `DO`(실행), `YOUNG`(유연), `COM`(소통) — 이 세 가지 키워드로 자신만의 건축관을 선언하는 사이트입니다.
 
