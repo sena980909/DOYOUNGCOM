@@ -4,9 +4,11 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import type { Project } from "@/lib/projects";
 import type { Profile, SkillCategory, HistoryItem } from "@/lib/profile";
+import type { BlogPost } from "@/lib/blog";
 
 type EditingProject = Project & { _new?: boolean };
-type Tab = "projects" | "profile";
+type EditingPost = BlogPost & { _new?: boolean };
+type Tab = "projects" | "profile" | "blog";
 
 export default function EditPage() {
   const { key } = useParams<{ key: string }>();
@@ -51,12 +53,17 @@ export default function EditPage() {
         <TabButton active={tab === "profile"} onClick={() => setTab("profile")}>
           Profile
         </TabButton>
+        <TabButton active={tab === "blog"} onClick={() => setTab("blog")}>
+          Blog
+        </TabButton>
       </div>
 
       {tab === "projects" ? (
         <ProjectsEditor adminKey={key} />
-      ) : (
+      ) : tab === "profile" ? (
         <ProfileEditor adminKey={key} />
+      ) : (
+        <BlogEditor adminKey={key} />
       )}
     </div>
   );
@@ -627,6 +634,185 @@ function ProfileEditor({ adminKey }: { adminKey: string }) {
 }
 
 /* ═══════════════════════════════════════════
+   BLOG EDITOR
+   ═══════════════════════════════════════════ */
+
+function BlogEditor({ adminKey }: { adminKey: string }) {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [editing, setEditing] = useState<EditingPost | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    fetch("/api/blog")
+      .then((r) => r.json())
+      .then(setPosts);
+  }, []);
+
+  async function handleSave() {
+    setSaving(true);
+    setMessage("");
+    try {
+      const res = await fetch("/api/blog", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": adminKey,
+        },
+        body: JSON.stringify(posts),
+      });
+      if (res.ok) {
+        setMessage("Saved!");
+        setTimeout(() => setMessage(""), 2000);
+      } else {
+        setMessage("Save failed");
+      }
+    } catch {
+      setMessage("Save failed");
+    }
+    setSaving(false);
+  }
+
+  function addPost() {
+    const today = new Date().toISOString().slice(0, 10);
+    setEditing({
+      slug: "",
+      title: "",
+      category: "",
+      excerpt: "",
+      date: today,
+      image: "",
+      tags: [],
+      content: "",
+      _new: true,
+    });
+  }
+
+  function saveEdit() {
+    if (!editing) return;
+    const { _new, ...post } = editing;
+    if (_new) {
+      setPosts([post, ...posts]);
+    } else {
+      setPosts(posts.map((p) => (p.slug === post.slug ? post : p)));
+    }
+    setEditing(null);
+  }
+
+  function deletePost(slug: string) {
+    if (confirm("Delete this post?")) {
+      setPosts(posts.filter((p) => p.slug !== slug));
+    }
+  }
+
+  // ─── Editing Form ────────────────────────────
+  if (editing) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <button
+          onClick={() => setEditing(null)}
+          className="mb-8 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
+        >
+          &larr; Back
+        </button>
+        <h2 className="mb-8 text-2xl font-bold">
+          {editing._new ? "New Post" : `Edit: ${editing.title}`}
+        </h2>
+
+        <div className="space-y-4">
+          <Field label="Title" value={editing.title} onChange={(v) => setEditing({ ...editing, title: v })} />
+          <Field label="Slug (URL path)" value={editing.slug} onChange={(v) => setEditing({ ...editing, slug: v })} />
+          <Field label="Category" value={editing.category} onChange={(v) => setEditing({ ...editing, category: v })} />
+          <Field label="Date (YYYY-MM-DD)" value={editing.date} onChange={(v) => setEditing({ ...editing, date: v })} />
+          <Field label="Image URL" value={editing.image} onChange={(v) => setEditing({ ...editing, image: v })} />
+          <FieldArea label="Excerpt (요약)" value={editing.excerpt} onChange={(v) => setEditing({ ...editing, excerpt: v })} />
+          <Field
+            label="Tags (comma separated)"
+            value={editing.tags.join(", ")}
+            onChange={(v) => setEditing({ ...editing, tags: v.split(",").map((s) => s.trim()).filter(Boolean) })}
+          />
+          <FieldArea
+            label="Content (HTML)"
+            value={editing.content}
+            onChange={(v) => setEditing({ ...editing, content: v })}
+            rows={16}
+          />
+        </div>
+
+        <button
+          onClick={saveEdit}
+          className="mt-8 border border-foreground px-8 py-2 text-sm font-medium transition-colors hover:bg-foreground hover:text-background"
+        >
+          {editing._new ? "Add Post" : "Update Post"}
+        </button>
+      </div>
+    );
+  }
+
+  // ─── Post List ────────────────────────────
+  return (
+    <>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Edit Blog</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{posts.length} posts</p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={addPost}
+            className="border border-border px-4 py-2 text-sm transition-colors hover:bg-muted"
+          >
+            + Add
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="border border-foreground px-6 py-2 text-sm font-medium transition-colors hover:bg-foreground hover:text-background disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save All"}
+          </button>
+        </div>
+      </div>
+
+      {message && <p className="mb-4 text-sm font-medium text-foreground">{message}</p>}
+
+      <div className="divide-y divide-border border-y border-border">
+        {posts.map((post, i) => (
+          <div key={post.slug || i} className="flex items-center gap-4 py-4">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-muted-foreground">
+                {post.date} — {post.category}
+              </p>
+              <p className="font-medium">{post.title}</p>
+              <p className="text-sm text-muted-foreground line-clamp-1">{post.excerpt}</p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setEditing({ ...post })}
+                className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => deletePost(post.slug)}
+                className="px-3 py-1 text-xs text-red-500 hover:text-red-400"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-8 text-xs text-muted-foreground">
+        Remember to click &quot;Save All&quot; after making changes.
+      </p>
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════
    Form Components
    ═══════════════════════════════════════════ */
 
@@ -658,10 +844,12 @@ function FieldArea({
   label,
   value,
   onChange,
+  rows = 4,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  rows?: number;
 }) {
   return (
     <div>
@@ -671,7 +859,7 @@ function FieldArea({
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        rows={4}
+        rows={rows}
         className="w-full border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground"
       />
     </div>
