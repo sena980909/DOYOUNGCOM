@@ -2,6 +2,8 @@
 
 Architecture portfolio site — **Engineer's Logic, Designer's Sense.**
 
+> **Agility in Architecture** — 건축은 무겁지만, 생각은 가벼워야 합니다.
+
 ## Stack
 
 - **Framework**: Next.js 14 (App Router)
@@ -16,7 +18,18 @@ Architecture portfolio site — **Engineer's Logic, Designer's Sense.**
 - **Blog**: Blog section (coming soon)
 - **Secret URL Editor**: Edit projects and profile via `/edit/YOUR_SECRET` — no login required
 - **ISR**: Content updates reflect within 60 seconds
-- **Responsive**: Mobile-first design with dark/light mode
+- **Responsive**: Mobile-first design
+
+## Pages
+
+| Route | Description |
+|---|---|
+| `/` | 메인 — 매니페스토 & 철학 |
+| `/projects` | 프로젝트 목록 |
+| `/projects/[slug]` | 프로젝트 상세 |
+| `/about` | 프로필 & 스킬 |
+| `/blog` | 블로그 |
+| `/edit/[key]` | 프로젝트 & 프로필 에디터 (관리자) |
 
 ## Getting Started
 
