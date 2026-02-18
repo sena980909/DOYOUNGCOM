@@ -1,6 +1,6 @@
 <div align="center">
 
-# DOYOUNGCOM
+# DOYOUNG.WORKS
 
 **Agility in Architecture**
 
@@ -202,7 +202,7 @@ npm run dev
 - 스킬 카테고리 및 숙련도 편집
 - 프로필 사진 업로드 (원형으로 표시)
 
-**Blog 탭**
+**Essay 탭**
 - 블로그 글 추가 / 수정 / 삭제
 - 제목, 카테고리, 날짜, 요약, 태그 편집
 - 썸네일 이미지 업로드 (Vercel Blob) + URL 직접 입력 + 미리보기
