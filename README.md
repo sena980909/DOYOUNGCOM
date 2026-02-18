@@ -64,6 +64,8 @@
 16:56  에러 바운더리 + API 에러 핸들링 추가
 17:03  아이콘 원형 처리
 17:30  블로그 기능 완성 — CRUD + 상세 페이지 + 에디터 탭
+17:45  블로그 기본 포스트 3개 등록 + Blob 데이터 동기화
+17:50  Vercel Blob allowOverwrite 이슈 수정
 ```
 
 ### 기술 선택 이유
@@ -95,6 +97,10 @@
   - `error.tsx`, `global-error.tsx` 추가 (에러 복구 UI)
   - API 라우트에 `try/catch` 추가
   - Footer에 이중 에러 방어 (fallback to defaultProfile)
+
+### Vercel Blob `allowOverwrite` 저장 실패
+- **문제**: Vercel Blob SDK 업데이트로 기존 파일 덮어쓰기 시 `allowOverwrite: true` 필수. 에디터에서 저장 시 500 에러 발생
+- **해결**: `storage.ts`의 모든 `put()` 호출에 `allowOverwrite: true` 추가
 
 ### 모바일 반응형 깨짐
 - **문제**: 데스크톱 우선으로 만든 레이아웃이 모바일에서 텍스트 오버플로, 카드 패딩 과다
