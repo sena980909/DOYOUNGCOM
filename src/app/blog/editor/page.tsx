@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { NovelEditor } from "@/components/editor/novel-editor";
 import type { JSONContent } from "novel";
 
-export default function EditorPage() {
+function EditorContent() {
   const searchParams = useSearchParams();
   const [authorized, setAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -67,7 +67,6 @@ export default function EditorPage() {
             onClick={() => {
               if (content) {
                 console.log("Saving content:", content);
-                // TODO: POST to API to save content
                 alert("Content logged to console (save API not yet connected)");
               }
             }}
@@ -85,5 +84,19 @@ export default function EditorPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function EditorPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      }
+    >
+      <EditorContent />
+    </Suspense>
   );
 }
