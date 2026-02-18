@@ -208,22 +208,22 @@ export default function HomePage() {
               <span className="text-muted-foreground">Email</span>
               <br />
               <a
-                href="mailto:doyoung@doyoungcom.com"
+                href="mailto:doyoungcom@gmail.com"
                 className="underline underline-offset-4 hover:text-muted-foreground"
               >
-                doyoung@doyoungcom.com
+                doyoungcom@gmail.com
               </a>
             </p>
             <p>
               <span className="text-muted-foreground">Instagram</span>
               <br />
               <a
-                href="https://instagram.com/doyoung_arch"
+                href="https://instagram.com/do__zip"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline underline-offset-4 hover:text-muted-foreground"
               >
-                @doyoung_arch
+                @do__zip
               </a>
             </p>
             <p className="pt-4 text-xs text-muted-foreground">
