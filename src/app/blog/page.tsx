@@ -13,13 +13,13 @@ export default async function BlogPage() {
   const posts = await getStoredPosts();
 
   return (
-    <div className="py-24">
-      <div className="mb-16">
+    <div className="py-12 sm:py-24">
+      <div className="mb-10 sm:mb-16">
         <p className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground">
           Arch-Log
         </p>
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Blog</h1>
-        <p className="mt-4 text-base text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-5xl">Blog</h1>
+        <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
           건축과 기술, 그리고 생각의 기록.
         </p>
       </div>
@@ -29,7 +29,7 @@ export default async function BlogPage() {
           No posts yet.
         </p>
       ) : (
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <Link
               key={post.slug}
