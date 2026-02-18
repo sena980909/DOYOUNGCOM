@@ -16,11 +16,19 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const profile = await request.json();
-  await saveProfile(profile);
+  try {
+    const profile = await request.json();
+    await saveProfile(profile);
 
-  revalidatePath("/");
-  revalidatePath("/about");
+    revalidatePath("/");
+    revalidatePath("/about");
 
-  return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("Failed to save profile:", err);
+    return NextResponse.json(
+      { error: "Failed to save profile" },
+      { status: 500 }
+    );
+  }
 }

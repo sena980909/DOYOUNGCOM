@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 import { getStoredProfile } from "@/lib/storage";
+import { defaultProfile } from "@/lib/profile";
 
 export async function Footer() {
-  const profile = await getStoredProfile();
+  let profile;
+  try {
+    profile = await getStoredProfile();
+  } catch {
+    profile = defaultProfile;
+  }
 
   return (
     <footer className="border-t border-border">

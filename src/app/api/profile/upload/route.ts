@@ -10,17 +10,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const formData = await request.formData();
-  const file = formData.get("file") as File | null;
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
 
-  if (!file) {
-    return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    const blob = await put(`profile/photo-${Date.now()}.${file.name.split(".").pop()}`, file, {
+      access: "public",
+      addRandomSuffix: false,
+    });
+
+    return NextResponse.json({ url: blob.url });
+  } catch (err) {
+    console.error("Failed to upload file:", err);
+    return NextResponse.json(
+      { error: "Failed to upload file" },
+      { status: 500 }
+    );
   }
-
-  const blob = await put(`profile/photo-${Date.now()}.${file.name.split(".").pop()}`, file, {
-    access: "public",
-    addRandomSuffix: false,
-  });
-
-  return NextResponse.json({ url: blob.url });
 }

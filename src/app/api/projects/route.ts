@@ -16,11 +16,19 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const projects = await request.json();
-  await saveProjects(projects);
+  try {
+    const projects = await request.json();
+    await saveProjects(projects);
 
-  revalidatePath("/projects");
-  revalidatePath("/");
+    revalidatePath("/projects");
+    revalidatePath("/");
 
-  return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("Failed to save projects:", err);
+    return NextResponse.json(
+      { error: "Failed to save projects" },
+      { status: 500 }
+    );
+  }
 }
