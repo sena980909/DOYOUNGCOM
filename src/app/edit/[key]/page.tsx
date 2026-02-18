@@ -1,10 +1,16 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import type { Project } from "@/lib/projects";
 import type { Profile, SkillCategory, HistoryItem } from "@/lib/profile";
 import type { BlogPost } from "@/lib/blog";
+
+const BlogNovelEditor = dynamic(
+  () => import("@/components/editor/blog-novel-editor").then((m) => m.BlogNovelEditor),
+  { ssr: false, loading: () => <div className="flex min-h-[400px] items-center justify-center border border-border rounded-lg text-sm text-muted-foreground">Loading editor...</div> }
+);
 
 type EditingProject = Project & { _new?: boolean };
 type EditingPost = BlogPost & { _new?: boolean };
@@ -642,6 +648,7 @@ function BlogEditor({ adminKey }: { adminKey: string }) {
   const [editing, setEditing] = useState<EditingPost | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [rawHtml, setRawHtml] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -778,12 +785,34 @@ function BlogEditor({ adminKey }: { adminKey: string }) {
             value={editing.tags.join(", ")}
             onChange={(v) => setEditing({ ...editing, tags: v.split(",").map((s) => s.trim()).filter(Boolean) })}
           />
-          <FieldArea
-            label="Content (HTML)"
-            value={editing.content}
-            onChange={(v) => setEditing({ ...editing, content: v })}
-            rows={16}
-          />
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Content
+              </label>
+              <button
+                type="button"
+                onClick={() => setRawHtml(!rawHtml)}
+                className="text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {rawHtml ? "Visual Editor" : "HTML Source"}
+              </button>
+            </div>
+            {rawHtml ? (
+              <textarea
+                value={editing.content}
+                onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+                rows={16}
+                className="w-full border border-border bg-background px-3 py-2 text-sm font-mono outline-none focus:border-foreground resize-y"
+              />
+            ) : (
+              <BlogNovelEditor
+                key={editing.slug}
+                initialHtml={editing.content}
+                onHtmlChange={(html) => setEditing({ ...editing, content: html })}
+              />
+            )}
+          </div>
         </div>
 
         <button
