@@ -69,6 +69,10 @@
 18:10  블로그 모바일 반응형 개선
 18:30  다크 모드 토글 구현 (next-themes)
 18:50  블로그 에디터 이미지 업로드 기능 추가
+19:10  TipTap WYSIWYG 에디터 도입 (블로그 + 프로젝트)
+19:20  에디터 성능 최적화 (debounce + memo)
+19:25  프로필 사진 원형 처리
+19:30  프로젝트 에디터 개선 (이미지 업로드, 필드 정리, 리치 텍스트)
 ```
 
 ### 기술 선택 이유
@@ -78,6 +82,7 @@
 | **Next.js 14 App Router** | 서버 컴포넌트 + ISR로 빠른 로딩 & SEO 최적화 |
 | **Tailwind CSS** | 디자인 시스템 없이도 일관된 미니멀 UI 구현 가능 |
 | **Vercel Blob** | 서버리스 환경에서 DB 없이 JSON 데이터 + 이미지 저장 |
+| **TipTap** | ProseMirror 기반 WYSIWYG 에디터, HTML 네이티브 지원 |
 | **next-themes** | 다크/라이트 모드 토글 + 시스템 설정 자동 감지 + localStorage 유지 |
 | **Vercel** | Git push만으로 자동 배포, 무료 호비 플랜 |
 
@@ -110,6 +115,14 @@
 - **문제**: 데스크톱 우선으로 만든 레이아웃이 모바일에서 텍스트 오버플로, 카드 패딩 과다
 - **해결**: `text-4xl → sm:text-6xl → lg:text-7xl` 단계적 스케일링, 그리드 컬럼 브레이크포인트 재조정
 
+### Novel WYSIWYG 에디터 런타임 크래시
+- **문제**: Novel 라이브러리의 `EditorContent`가 HTML 문자열을 직접 로드할 수 없어 `onUpdate` + `setTimeout` + `setContent` hack 사용 → 런타임 "Something went wrong" 에러 발생
+- **해결**: Novel 래퍼를 제거하고 **TipTap을 직접 사용** (`useEditor({ content: htmlString })` — HTML 네이티브 지원). 플로팅 버블 메뉴 → 고정 툴바로 변경하여 안정성 확보
+
+### WYSIWYG 에디터 입력 지연
+- **문제**: `onUpdate`에서 매 키 입력마다 `editor.getHTML()` + 부모 `setState` 호출 → 전체 페이지 리렌더링으로 타이핑 지연
+- **해결**: 300ms debounce + `useRef`로 콜백 저장 + `React.memo`로 불필요한 리렌더링 방지
+
 ## 5. 프로젝트 구조
 
 ```
@@ -119,24 +132,26 @@ src/
 │   ├── layout.tsx            # 공통 레이아웃 (Header + Footer)
 │   ├── error.tsx             # 에러 바운더리
 │   ├── global-error.tsx      # 글로벌 에러 바운더리
-│   ├── about/page.tsx        # 프로필
+│   ├── about/page.tsx        # 프로필 (원형 사진)
 │   ├── projects/
 │   │   ├── page.tsx          # 프로젝트 목록
-│   │   └── [slug]/page.tsx   # 프로젝트 상세
+│   │   └── [slug]/page.tsx   # 프로젝트 상세 (+ 리치 콘텐츠 렌더링)
 │   ├── blog/
 │   │   ├── page.tsx          # 블로그 목록 (카드 레이아웃)
 │   │   ├── [slug]/page.tsx   # 블로그 상세 (HTML 렌더링)
-│   │   └── editor/page.tsx   # 블로그 에디터 (Novel, 레거시)
+│   │   └── editor/page.tsx   # 블로그 에디터 (레거시)
 │   ├── edit/[key]/page.tsx   # 관리자 에디터 (Projects/Profile/Blog 탭)
 │   └── api/
 │       ├── admin/verify/     # 관리자 키 검증
 │       ├── blog/             # 블로그 CRUD + 이미지 업로드
-│       ├── profile/          # 프로필 CRUD
-│       ├── profile/upload/   # 사진 업로드
-│       └── projects/         # 프로젝트 CRUD
+│       ├── profile/          # 프로필 CRUD + 사진 업로드
+│       └── projects/         # 프로젝트 CRUD + 이미지 업로드
 ├── components/
-│   ├── header.tsx            # 네비게이션 (모바일 햄버거 포함)
-│   └── footer.tsx            # 푸터 (프로필 데이터 연동)
+│   ├── header.tsx            # 네비게이션 + 다크 모드 토글
+│   ├── footer.tsx            # 푸터 (프로필 데이터 연동)
+│   ├── theme-provider.tsx    # next-themes 프로바이더
+│   └── editor/
+│       └── blog-novel-editor.tsx  # TipTap WYSIWYG 에디터
 └── lib/
     ├── admin.ts              # 관리자 키 검증 (timing-safe)
     ├── blog.ts               # BlogPost 타입 + 기본 포스트
@@ -175,20 +190,23 @@ npm run dev
 
 **Projects 탭**
 - 프로젝트 추가 / 수정 / 삭제 / 순서 변경
-- 이미지 URL, 카테고리, 컨셉, 사용 도구 등 편집
+- 이미지 업로드 (Vercel Blob) + URL 직접 입력 + 미리보기
+- 카테고리, 컨셉, 사용 도구 등 구조화된 필드 편집
+- **TipTap WYSIWYG 에디터** — 리치 텍스트 콘텐츠 작성 (굵기, 기울임, 제목, 리스트, 인용구 등)
+- HTML Source 모드 토글로 raw HTML 직접 편집도 가능
 
 **Profile 탭**
 - 기본 정보 (이름, 학력, 연락처)
 - About Me, DO/YOUNG/COM 설명
 - 학력·이력 항목 추가/삭제
 - 스킬 카테고리 및 숙련도 편집
-- 프로필 사진 업로드
+- 프로필 사진 업로드 (원형으로 표시)
 
 **Blog 탭**
 - 블로그 글 추가 / 수정 / 삭제
 - 제목, 카테고리, 날짜, 요약, 태그 편집
 - 썸네일 이미지 업로드 (Vercel Blob) + URL 직접 입력 + 미리보기
-- **Novel WYSIWYG 에디터** — 텍스트 드래그 시 서식 메뉴 (굵기, 기울임, 제목 크기, 인용구 등), `/` 슬래시 명령어 지원
+- **TipTap WYSIWYG 에디터** — 고정 툴바에서 서식 적용 (굵기, 기울임, 밑줄, 취소선, 코드, 제목 H2/H3, 리스트, 인용구, 코드 블록, 구분선, Undo/Redo)
 - HTML Source 모드 토글로 raw HTML 직접 편집도 가능
 
 ## 8. 향후 계획
@@ -197,7 +215,8 @@ npm run dev
 - [ ] **커스텀 도메인 연결** — 현재 `doyoungcom.vercel.app` (Vercel 기본값) → `doyoungcom.com` 등 자체 도메인 연결 필요
 - [x] ~~**다크 모드**~~ — next-themes 기반 라이트/다크 토글, 시스템 설정 자동 감지, 선택 유지
 - [ ] **프로젝트 이미지 갤러리** — 현재 대표 이미지 1장 → 복수 이미지 슬라이드
-- [x] ~~**블로그 WYSIWYG 에디터**~~ — Novel 에디터 연동, 버블 메뉴 + 슬래시 명령어 + HTML 토글
+- [x] ~~**WYSIWYG 에디터**~~ — TipTap 기반 리치 텍스트 에디터 (블로그 + 프로젝트), 고정 툴바 + HTML 토글
+- [x] ~~**프로필 사진 원형 처리**~~ — `rounded-full`로 원형 클리핑
 
 > 커스텀 도메인 연결 시 `NEXT_PUBLIC_SITE_URL` 환경변수만 변경하면 SEO, OG 태그 등이 자동으로 반영되도록 설계되어 있습니다.
 
