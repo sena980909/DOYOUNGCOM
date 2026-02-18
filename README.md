@@ -68,6 +68,7 @@
 17:50  Vercel Blob allowOverwrite 이슈 수정
 18:10  블로그 모바일 반응형 개선
 18:30  다크 모드 토글 구현 (next-themes)
+18:50  블로그 에디터 이미지 업로드 기능 추가
 ```
 
 ### 기술 선택 이유
@@ -129,7 +130,7 @@ src/
 │   ├── edit/[key]/page.tsx   # 관리자 에디터 (Projects/Profile/Blog 탭)
 │   └── api/
 │       ├── admin/verify/     # 관리자 키 검증
-│       ├── blog/             # 블로그 CRUD
+│       ├── blog/             # 블로그 CRUD + 이미지 업로드
 │       ├── profile/          # 프로필 CRUD
 │       ├── profile/upload/   # 사진 업로드
 │       └── projects/         # 프로젝트 CRUD
@@ -185,7 +186,8 @@ npm run dev
 
 **Blog 탭**
 - 블로그 글 추가 / 수정 / 삭제
-- 제목, 카테고리, 날짜, 썸네일, 요약, 태그 편집
+- 제목, 카테고리, 날짜, 요약, 태그 편집
+- 썸네일 이미지 업로드 (Vercel Blob) + URL 직접 입력 + 미리보기
 - HTML 콘텐츠 직접 편집
 
 ## 8. 향후 계획
