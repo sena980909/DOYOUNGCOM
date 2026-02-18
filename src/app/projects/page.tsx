@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { projects } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -7,21 +9,42 @@ export const metadata: Metadata = {
 export default function ProjectsPage() {
   return (
     <div className="py-24">
-      <h1 className="mb-4 text-4xl font-bold tracking-tight">Projects</h1>
-      <p className="mb-16 text-muted-foreground">
-        A curated collection of architectural and design work.
+      <p className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground">
+        Projects
+      </p>
+      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+        Selected Work
+      </h1>
+      <p className="mt-4 max-w-xl text-base text-muted-foreground">
+        주거, 문화, 상업, 오피스, 도시설계, 공모전까지 — 다양한 스케일의 건축
+        작업을 기록합니다.
       </p>
 
-      <div className="grid gap-px sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 9 }, (_, i) => (
-          <div
-            key={i}
-            className="group relative aspect-[4/3] cursor-pointer overflow-hidden bg-muted"
+      <div className="mt-20 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project) => (
+          <Link
+            key={project.slug}
+            href={`/projects/${project.slug}`}
+            className="group relative aspect-[4/3] overflow-hidden bg-muted"
           >
-            <div className="flex h-full items-center justify-center text-sm text-muted-foreground transition-colors group-hover:text-foreground">
-              Project {i + 1}
+            {/* Overlay content */}
+            <div className="flex h-full flex-col justify-end p-6">
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground transition-colors group-hover:text-foreground/60">
+                {project.number} — {project.category}
+              </p>
+              <h2 className="mt-2 text-xl font-bold tracking-tight transition-colors group-hover:text-foreground">
+                {project.title}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground transition-colors group-hover:text-foreground/80">
+                {project.subtitle}
+              </p>
             </div>
-          </div>
+
+            {/* Hover arrow indicator */}
+            <div className="absolute right-5 top-5 translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100">
+              <span className="text-sm">&rarr;</span>
+            </div>
+          </Link>
         ))}
       </div>
     </div>
