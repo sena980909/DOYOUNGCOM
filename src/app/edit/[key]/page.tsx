@@ -641,6 +641,7 @@ function BlogEditor({ adminKey }: { adminKey: string }) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [editing, setEditing] = useState<EditingPost | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -705,6 +706,30 @@ function BlogEditor({ adminKey }: { adminKey: string }) {
     }
   }
 
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editing) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/blog/upload", {
+        method: "POST",
+        headers: { "x-admin-key": adminKey },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        setEditing({ ...editing, image: data.url });
+        setMessage("Image uploaded!");
+        setTimeout(() => setMessage(""), 3000);
+      }
+    } catch {
+      setMessage("Upload failed");
+    }
+    setUploading(false);
+  }
+
   // ─── Editing Form ────────────────────────────
   if (editing) {
     return (
@@ -724,7 +749,29 @@ function BlogEditor({ adminKey }: { adminKey: string }) {
           <Field label="Slug (URL path)" value={editing.slug} onChange={(v) => setEditing({ ...editing, slug: v })} />
           <Field label="Category" value={editing.category} onChange={(v) => setEditing({ ...editing, category: v })} />
           <Field label="Date (YYYY-MM-DD)" value={editing.date} onChange={(v) => setEditing({ ...editing, date: v })} />
-          <Field label="Image URL" value={editing.image} onChange={(v) => setEditing({ ...editing, image: v })} />
+          <div>
+            <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Thumbnail Image
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={editing.image}
+                onChange={(e) => setEditing({ ...editing, image: e.target.value })}
+                placeholder="Image URL or upload →"
+                className="flex-1 border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground"
+              />
+              <label className={`flex cursor-pointer items-center border border-border px-4 py-2 text-xs font-medium uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+                {uploading ? "Uploading..." : "Upload"}
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              </label>
+            </div>
+            {editing.image && (
+              <div className="mt-2 aspect-[16/9] max-w-xs overflow-hidden rounded border border-border bg-muted">
+                <img src={editing.image} alt="Preview" className="h-full w-full object-cover" />
+              </div>
+            )}
+          </div>
           <FieldArea label="Excerpt (요약)" value={editing.excerpt} onChange={(v) => setEditing({ ...editing, excerpt: v })} />
           <Field
             label="Tags (comma separated)"
