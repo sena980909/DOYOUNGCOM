@@ -34,7 +34,7 @@ export interface Profile {
 export const defaultProfile: Profile = {
   name: "두영컴",
   nameEn: "DOYOUNGCOM",
-  birth: "2000.XX.XX",
+  birth: "200X.XX.XX",
   education: "XX대학교 건축학과 (5년제)",
   contact: "doyoungcom@gmail.com",
   instagram: "@do__zip",
