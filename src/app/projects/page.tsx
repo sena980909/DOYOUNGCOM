@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { projects } from "@/lib/projects";
 
@@ -27,22 +28,34 @@ export default function ProjectsPage() {
             href={`/projects/${project.slug}`}
             className="group relative aspect-[4/3] overflow-hidden bg-muted"
           >
+            {/* Background image */}
+            <Image
+              src={project.image}
+              alt={project.title}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
             {/* Overlay content */}
-            <div className="flex h-full flex-col justify-end p-6">
-              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground transition-colors group-hover:text-foreground/60">
+            <div className="relative flex h-full flex-col justify-end p-6">
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/60">
                 {project.number} — {project.category}
               </p>
-              <h2 className="mt-2 text-xl font-bold tracking-tight transition-colors group-hover:text-foreground">
+              <h2 className="mt-2 text-xl font-bold tracking-tight text-white">
                 {project.title}
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground transition-colors group-hover:text-foreground/80">
+              <p className="mt-1 text-sm text-white/80">
                 {project.subtitle}
               </p>
             </div>
 
             {/* Hover arrow indicator */}
             <div className="absolute right-5 top-5 translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100">
-              <span className="text-sm">&rarr;</span>
+              <span className="text-sm text-white">&rarr;</span>
             </div>
           </Link>
         ))}

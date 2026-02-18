@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projects, getProject } from "@/lib/projects";
@@ -18,6 +19,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${project.title} — ${project.subtitle}`,
     description: project.concept,
+    openGraph: {
+      images: [{ url: project.image, alt: project.title }],
+    },
   };
 }
 
@@ -76,11 +80,16 @@ export default async function ProjectDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Image placeholder */}
-      <div className="mt-16 flex aspect-[16/9] items-center justify-center bg-muted">
-        <p className="text-sm text-muted-foreground">
-          Project Image — {project.title}
-        </p>
+      {/* Project image */}
+      <div className="relative mt-16 aspect-[16/9] overflow-hidden bg-muted">
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 1152px) 100vw, 1152px"
+          priority
+        />
       </div>
 
       {/* Content */}

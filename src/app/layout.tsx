@@ -15,6 +15,10 @@ export function generateMetadata(): Metadata {
     },
     description: siteConfig.description,
     metadataBase: new URL(baseUrl),
+    icons: {
+      icon: "/icon.png",
+      apple: "/apple-icon.png",
+    },
     openGraph: {
       type: "website",
       locale: "ko_KR",
@@ -22,11 +26,20 @@ export function generateMetadata(): Metadata {
       siteName: siteConfig.name,
       title: siteConfig.name,
       description: siteConfig.description,
+      images: [
+        {
+          url: "/og-image.png",
+          width: 512,
+          height: 512,
+          alt: siteConfig.name,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: siteConfig.name,
       description: siteConfig.description,
+      images: ["/og-image.png"],
     },
     robots: {
       index: true,

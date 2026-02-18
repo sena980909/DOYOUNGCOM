@@ -10,6 +10,7 @@ export interface Project {
   conceptDetails: string[];
   whatIDid: string[];
   tools: string[];
+  image: string;
 }
 
 export const projects: Project[] = [
@@ -33,6 +34,7 @@ export const projects: Project[] = [
       "모형 제작 (White Model)",
     ],
     tools: ["Rhino", "V-Ray", "Photoshop"],
+    image: "/images/project-01.jpg",
   },
   {
     slug: "book-slope",
@@ -54,6 +56,7 @@ export const projects: Project[] = [
       "단면도(Section) 상세화",
     ],
     tools: ["SketchUp", "AutoCAD", "Twinmotion"],
+    image: "/images/project-02.jpg",
   },
   {
     slug: "brick-layer",
@@ -74,6 +77,7 @@ export const projects: Project[] = [
       "내부 투시도",
     ],
     tools: ["Revit", "Enscape"],
+    image: "/images/project-03.jpg",
   },
   {
     slug: "green-void",
@@ -95,6 +99,7 @@ export const projects: Project[] = [
       "입면 디자인 스터디",
     ],
     tools: ["Rhino", "Grasshopper", "Illustrator"],
+    image: "/images/project-04.jpg",
   },
   {
     slug: "alley-way",
@@ -116,6 +121,7 @@ export const projects: Project[] = [
       "콜라주(Collage) 이미지",
     ],
     tools: ["Photoshop", "Illustrator"],
+    image: "/images/project-05.jpg",
   },
   {
     slug: "module-shelter",
@@ -137,6 +143,7 @@ export const projects: Project[] = [
       "패널 레이아웃",
     ],
     tools: ["SketchUp", "Photoshop"],
+    image: "/images/project-06.jpg",
   },
 ];
 
