@@ -28,7 +28,7 @@ export default async function ProfilePage() {
           </p>
         </div>
         {profile.photo && (
-          <div className="relative h-48 w-48 shrink-0 overflow-hidden">
+          <div className="relative h-32 w-32 shrink-0 overflow-hidden sm:h-48 sm:w-48">
             <Image
               src={profile.photo}
               alt={profile.name}
@@ -40,7 +40,7 @@ export default async function ProfilePage() {
       </div>
 
       {/* Basic Info */}
-      <section className="mb-20 grid grid-cols-2 gap-6 border-y border-border py-8 sm:grid-cols-4">
+      <section className="mb-20 grid grid-cols-1 gap-6 border-y border-border py-8 sm:grid-cols-2 lg:grid-cols-4">
         <InfoItem label="Name" value={profile.name} />
         <InfoItem label="Birth" value={profile.birth} />
         <InfoItem label="Education" value={profile.education} />
@@ -56,7 +56,7 @@ export default async function ProfilePage() {
           ))}
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-3">
           <PhilosophyCard
             keyword="DO"
             description={profile.doDescription}
@@ -97,7 +97,7 @@ export default async function ProfilePage() {
       {/* Skills & Tools */}
       <section className="mb-20">
         <SectionTitle>Skills &amp; Tools</SectionTitle>
-        <div className="grid gap-12 sm:grid-cols-3">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {profile.skills.map((cat) => (
             <div key={cat.category}>
               <h3 className="mb-6 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">

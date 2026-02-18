@@ -69,7 +69,7 @@ export default function HomePage() {
           {/* 1. DO */}
           <div className="grid items-start gap-8 lg:grid-cols-[240px_1fr]">
             <div>
-              <span className="text-6xl font-bold tracking-tighter lg:text-7xl">
+              <span className="text-4xl font-bold tracking-tighter sm:text-6xl lg:text-7xl">
                 DO
               </span>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -103,7 +103,7 @@ export default function HomePage() {
           {/* 2. YOUNG */}
           <div className="grid items-start gap-8 lg:grid-cols-[240px_1fr]">
             <div>
-              <span className="text-6xl font-bold tracking-tighter lg:text-7xl">
+              <span className="text-4xl font-bold tracking-tighter sm:text-6xl lg:text-7xl">
                 YOUNG
               </span>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -135,7 +135,7 @@ export default function HomePage() {
           {/* 3. COM */}
           <div className="grid items-start gap-8 lg:grid-cols-[240px_1fr]">
             <div>
-              <span className="text-6xl font-bold tracking-tighter lg:text-7xl">
+              <span className="text-4xl font-bold tracking-tighter sm:text-6xl lg:text-7xl">
                 COM
               </span>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
