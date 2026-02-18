@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { getStoredProfile } from "@/lib/storage";
 
-export default function HomePage() {
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const profile = await getStoredProfile();
   return (
     <div className="flex flex-col">
       {/* ──────────────────────────────────────────────
@@ -208,22 +212,22 @@ export default function HomePage() {
               <span className="text-muted-foreground">Email</span>
               <br />
               <a
-                href="mailto:doyoungcom@gmail.com"
+                href={`mailto:${profile.contact}`}
                 className="underline underline-offset-4 hover:text-muted-foreground"
               >
-                doyoungcom@gmail.com
+                {profile.contact}
               </a>
             </p>
             <p>
               <span className="text-muted-foreground">Instagram</span>
               <br />
               <a
-                href="https://instagram.com/do__zip"
+                href={profile.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline underline-offset-4 hover:text-muted-foreground"
               >
-                @do__zip
+                {profile.instagram}
               </a>
             </p>
             <p className="pt-4 text-xs text-muted-foreground">

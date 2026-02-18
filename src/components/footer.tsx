@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
+import { getStoredProfile } from "@/lib/storage";
 
-export function Footer() {
+export async function Footer() {
+  const profile = await getStoredProfile();
+
   return (
     <footer className="border-t border-border">
       <div className="mx-auto max-w-6xl px-6 py-16">
@@ -10,7 +13,7 @@ export function Footer() {
           <div>
             <p className="text-sm font-bold tracking-tight">{siteConfig.name}</p>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              Engineer&apos;s Logic, Designer&apos;s Sense.
+              {profile.tagline}
             </p>
           </div>
 
@@ -39,18 +42,18 @@ export function Footer() {
             </p>
             <div className="space-y-2">
               <a
-                href="mailto:doyoungcom@gmail.com"
+                href={`mailto:${profile.contact}`}
                 className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
-                doyoungcom@gmail.com
+                {profile.contact}
               </a>
               <a
-                href="https://instagram.com/do__zip"
+                href={profile.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
-                @do__zip
+                {profile.instagram}
               </a>
             </div>
           </div>
