@@ -27,6 +27,7 @@ export async function saveProjects(projects: Project[]): Promise<void> {
   await put(PROJECTS_PATH, JSON.stringify(projects, null, 2), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
 }
 
@@ -47,6 +48,7 @@ export async function saveProfile(profile: Profile): Promise<void> {
   await put(PROFILE_PATH, JSON.stringify(profile, null, 2), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
 }
 
@@ -67,5 +69,6 @@ export async function savePosts(posts: BlogPost[]): Promise<void> {
   await put(BLOG_PATH, JSON.stringify(posts, null, 2), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
 }
