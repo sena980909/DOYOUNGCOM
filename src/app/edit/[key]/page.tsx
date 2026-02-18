@@ -110,6 +110,7 @@ function ProjectsEditor({ adminKey }: { adminKey: string }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [editing, setEditing] = useState<EditingProject | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -178,6 +179,30 @@ function ProjectsEditor({ adminKey }: { adminKey: string }) {
     }
   }
 
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editing) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/projects/upload", {
+        method: "POST",
+        headers: { "x-admin-key": adminKey },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        setEditing({ ...editing, image: data.url });
+        setMessage("Image uploaded!");
+        setTimeout(() => setMessage(""), 3000);
+      }
+    } catch {
+      setMessage("Upload failed");
+    }
+    setUploading(false);
+  }
+
   function moveProject(index: number, direction: -1 | 1) {
     const target = index + direction;
     if (target < 0 || target >= projects.length) return;
@@ -201,27 +226,58 @@ function ProjectsEditor({ adminKey }: { adminKey: string }) {
         </h2>
 
         <div className="space-y-4">
-          <Field label="Title" value={editing.title} onChange={(v) => setEditing({ ...editing, title: v })} />
-          <Field label="Slug (URL path)" value={editing.slug} onChange={(v) => setEditing({ ...editing, slug: v })} />
-          <Field label="Subtitle" value={editing.subtitle} onChange={(v) => setEditing({ ...editing, subtitle: v })} />
+          {/* ── Basic Info ── */}
           <Field label="Number (01, 02...)" value={editing.number} onChange={(v) => setEditing({ ...editing, number: v })} />
+          <Field label="Title" value={editing.title} onChange={(v) => setEditing({ ...editing, title: v })} />
+          <Field label="Subtitle" value={editing.subtitle} onChange={(v) => setEditing({ ...editing, subtitle: v })} />
+          <Field label="Slug (URL path)" value={editing.slug} onChange={(v) => setEditing({ ...editing, slug: v })} />
+
+          {/* ── Classification ── */}
           <Field label="Category" value={editing.category} onChange={(v) => setEditing({ ...editing, category: v })} />
           <Field label="Location" value={editing.location} onChange={(v) => setEditing({ ...editing, location: v })} />
-          <Field label="Image URL" value={editing.image} onChange={(v) => setEditing({ ...editing, image: v })} />
+
+          {/* ── Image ── */}
+          <div>
+            <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Project Image
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={editing.image}
+                onChange={(e) => setEditing({ ...editing, image: e.target.value })}
+                placeholder="Image URL or upload →"
+                className="flex-1 border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground"
+              />
+              <label className={`flex cursor-pointer items-center border border-border px-4 py-2 text-xs font-medium uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+                {uploading ? "Uploading..." : "Upload"}
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              </label>
+            </div>
+            {editing.image && (
+              <div className="mt-2 aspect-[16/9] max-w-xs overflow-hidden rounded border border-border bg-muted">
+                <img src={editing.image} alt="Preview" className="h-full w-full object-cover" />
+              </div>
+            )}
+          </div>
+
+          {/* ── Content ── */}
           <FieldArea label="Problem" value={editing.problem} onChange={(v) => setEditing({ ...editing, problem: v })} />
-          <Field label="Concept (one line)" value={editing.concept} onChange={(v) => setEditing({ ...editing, concept: v })} />
+          <Field label="Concept (한 줄 요약)" value={editing.concept} onChange={(v) => setEditing({ ...editing, concept: v })} />
           <FieldArea
-            label="Concept Details (one per line)"
+            label="Concept Details (한 줄에 하나씩)"
             value={editing.conceptDetails.join("\n")}
             onChange={(v) => setEditing({ ...editing, conceptDetails: v.split("\n").filter(Boolean) })}
           />
           <FieldArea
-            label="What I Did (one per line)"
+            label="What I Did (한 줄에 하나씩)"
             value={editing.whatIDid.join("\n")}
             onChange={(v) => setEditing({ ...editing, whatIDid: v.split("\n").filter(Boolean) })}
           />
+
+          {/* ── Tools ── */}
           <Field
-            label="Tools (comma separated)"
+            label="Tools (쉼표로 구분)"
             value={editing.tools.join(", ")}
             onChange={(v) => setEditing({ ...editing, tools: v.split(",").map((s) => s.trim()).filter(Boolean) })}
           />
