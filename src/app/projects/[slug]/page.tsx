@@ -2,32 +2,39 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { projects, getProject } from "@/lib/projects";
+import { getNotionProjects, getNotionProjectBySlug } from "@/lib/notion";
+import {
+  projects as fallbackProjects,
+  getProject as getFallbackProject,
+} from "@/lib/projects";
+
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProject(slug);
+  const notionProject = await getNotionProjectBySlug(slug);
+  const project = notionProject ?? getFallbackProject(slug);
   if (!project) return {};
   return {
     title: `${project.title} — ${project.subtitle}`,
     description: project.concept,
-    openGraph: {
-      images: [{ url: project.image, alt: project.title }],
-    },
+    openGraph: project.image
+      ? { images: [{ url: project.image, alt: project.title }] }
+      : undefined,
   };
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
-  const project = getProject(slug);
+
+  const notionProjects = await getNotionProjects();
+  const projects =
+    notionProjects.length > 0 ? notionProjects : fallbackProjects;
+  const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
 
   const currentIndex = projects.findIndex((p) => p.slug === slug);
@@ -37,7 +44,6 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   return (
     <div className="py-24">
-      {/* Back link */}
       <Link
         href="/projects"
         className="inline-block text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
@@ -45,7 +51,6 @@ export default async function ProjectDetailPage({ params }: Props) {
         &larr; All Projects
       </Link>
 
-      {/* Header */}
       <div className="mt-12">
         <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Project {project.number} — {project.category}
@@ -58,7 +63,6 @@ export default async function ProjectDetailPage({ params }: Props) {
         </p>
       </div>
 
-      {/* Meta row */}
       <div className="mt-12 grid gap-8 border-t border-border pt-8 sm:grid-cols-3">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -80,21 +84,24 @@ export default async function ProjectDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Project image */}
-      <div className="relative mt-16 aspect-[16/9] overflow-hidden bg-muted">
-        <Image
-          src={project.image}
-          alt={project.title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 1152px) 100vw, 1152px"
-          priority
-        />
-      </div>
+      {project.image ? (
+        <div className="relative mt-16 aspect-[16/9] overflow-hidden bg-muted">
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1152px) 100vw, 1152px"
+            priority
+          />
+        </div>
+      ) : (
+        <div className="mt-16 flex aspect-[16/9] items-center justify-center bg-muted">
+          <p className="text-sm text-muted-foreground">{project.title}</p>
+        </div>
+      )}
 
-      {/* Content */}
       <div className="mx-auto mt-20 max-w-3xl">
-        {/* Problem */}
         {project.problem && (
           <section className="mb-16">
             <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
@@ -104,7 +111,6 @@ export default async function ProjectDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* Concept */}
         <section className="mb-16">
           <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
             Concept
@@ -119,7 +125,6 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         </section>
 
-        {/* What I Did */}
         <section className="mb-16">
           <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
             What I Did
@@ -139,7 +144,6 @@ export default async function ProjectDetailPage({ params }: Props) {
           </ul>
         </section>
 
-        {/* Tools */}
         <section className="mb-16">
           <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
             Tools
@@ -157,7 +161,6 @@ export default async function ProjectDetailPage({ params }: Props) {
         </section>
       </div>
 
-      {/* Prev / Next navigation */}
       <div className="mt-20 grid gap-px border-t border-border pt-px sm:grid-cols-2">
         {prev ? (
           <Link

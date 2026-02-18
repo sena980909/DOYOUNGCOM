@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { projects } from "@/lib/projects";
+import { getNotionProjects } from "@/lib/notion";
+import { projects as fallbackProjects } from "@/lib/projects";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Projects",
 };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const notionProjects = await getNotionProjects();
+  const projects = notionProjects.length > 0 ? notionProjects : fallbackProjects;
+
   return (
     <div className="py-24">
       <p className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground">
@@ -28,19 +34,19 @@ export default function ProjectsPage() {
             href={`/projects/${project.slug}`}
             className="group relative aspect-[4/3] overflow-hidden bg-muted"
           >
-            {/* Background image */}
-            <Image
-              src={project.image}
-              alt={project.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
+            {project.image && (
+              <>
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              </>
+            )}
 
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-            {/* Overlay content */}
             <div className="relative flex h-full flex-col justify-end p-6">
               <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/60">
                 {project.number} — {project.category}
@@ -53,7 +59,6 @@ export default function ProjectsPage() {
               </p>
             </div>
 
-            {/* Hover arrow indicator */}
             <div className="absolute right-5 top-5 translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100">
               <span className="text-sm text-white">&rarr;</span>
             </div>

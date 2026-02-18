@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getNotionPosts } from "@/lib/notion";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Blog",
 };
 
-export default function BlogPage() {
-  // TODO: Fetch posts from database or file system
-  const posts: { slug: string; title: string; date: string; excerpt: string }[] = [];
+export default async function BlogPage() {
+  const posts = await getNotionPosts();
 
   return (
     <div className="py-24">
@@ -38,9 +40,11 @@ export default function BlogPage() {
               <h2 className="mt-2 text-xl font-semibold tracking-tight group-hover:underline">
                 {post.title}
               </h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {post.excerpt}
-              </p>
+              {post.excerpt && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {post.excerpt}
+                </p>
+              )}
             </Link>
           ))}
         </div>
