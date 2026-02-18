@@ -798,6 +798,13 @@ function BlogEditor({ adminKey }: { adminKey: string }) {
                 {rawHtml ? "Visual Editor" : "HTML Source"}
               </button>
             </div>
+            {!rawHtml && (
+              <div className="mb-2 rounded border border-border bg-muted/50 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+                <span className="font-medium text-foreground/70">Tip:</span>{" "}
+                텍스트를 드래그하면 서식 메뉴가 나타납니다 (굵기, 기울임, 제목 등).{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-[10px]">/</code> 를 입력하면 블록 명령어를 사용할 수 있습니다.
+              </div>
+            )}
             {rawHtml ? (
               <textarea
                 value={editing.content}
