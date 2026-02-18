@@ -30,7 +30,7 @@
 
 - 기존 건축 포트폴리오는 PDF나 정적 이미지 위주 → **웹 기반 인터랙티브 포트폴리오**로 차별화
 - 건축가도 코드와 AI를 도구로 쓸 수 있다는 것을 **사이트 자체가 증명**
-- 콘텐츠(프로젝트, 프로필)를 비개발자도 쉽게 편집할 수 있는 **자체 CMS** 내장
+- 콘텐츠(프로젝트, 프로필, 블로그)를 비개발자도 쉽게 편집할 수 있는 **자체 CMS** 내장
 
 ### 핵심 설계 원칙
 
@@ -63,6 +63,7 @@
 16:37  저장 시 on-demand revalidation 추가
 16:56  에러 바운더리 + API 에러 핸들링 추가
 17:03  아이콘 원형 처리
+17:30  블로그 기능 완성 — CRUD + 상세 페이지 + 에디터 탭
 ```
 
 ### 기술 선택 이유
@@ -113,11 +114,13 @@ src/
 │   │   ├── page.tsx          # 프로젝트 목록
 │   │   └── [slug]/page.tsx   # 프로젝트 상세
 │   ├── blog/
-│   │   ├── page.tsx          # 블로그 목록
-│   │   └── editor/page.tsx   # 블로그 에디터 (Novel)
-│   ├── edit/[key]/page.tsx   # 관리자 에디터
+│   │   ├── page.tsx          # 블로그 목록 (카드 레이아웃)
+│   │   ├── [slug]/page.tsx   # 블로그 상세 (HTML 렌더링)
+│   │   └── editor/page.tsx   # 블로그 에디터 (Novel, 레거시)
+│   ├── edit/[key]/page.tsx   # 관리자 에디터 (Projects/Profile/Blog 탭)
 │   └── api/
 │       ├── admin/verify/     # 관리자 키 검증
+│       ├── blog/             # 블로그 CRUD
 │       ├── profile/          # 프로필 CRUD
 │       ├── profile/upload/   # 사진 업로드
 │       └── projects/         # 프로젝트 CRUD
@@ -126,9 +129,10 @@ src/
 │   └── footer.tsx            # 푸터 (프로필 데이터 연동)
 └── lib/
     ├── admin.ts              # 관리자 키 검증 (timing-safe)
+    ├── blog.ts               # BlogPost 타입 + 기본 포스트
     ├── profile.ts            # Profile 타입 + 기본값
     ├── projects.ts           # Project 타입 + 기본값
-    ├── storage.ts            # Vercel Blob 읽기/쓰기
+    ├── storage.ts            # Vercel Blob 읽기/쓰기 (Projects/Profile/Blog)
     ├── site-config.ts        # 사이트 전역 설정
     └── utils.ts              # cn(), getBaseUrl()
 ```
@@ -170,12 +174,18 @@ npm run dev
 - 스킬 카테고리 및 숙련도 편집
 - 프로필 사진 업로드
 
+**Blog 탭**
+- 블로그 글 추가 / 수정 / 삭제
+- 제목, 카테고리, 날짜, 썸네일, 요약, 태그 편집
+- HTML 콘텐츠 직접 편집
+
 ## 8. 향후 계획
 
+- [x] ~~**블로그 기능 완성**~~ — 목록, 상세 페이지, 에디터 CRUD 구현 완료
 - [ ] **커스텀 도메인 연결** — 현재 `doyoungcom.vercel.app` (Vercel 기본값) → `doyoungcom.com` 등 자체 도메인 연결 필요
-- [ ] **블로그 기능 완성** — 현재 에디터(Novel)는 구현되어 있으나 게시/조회 기능 미완성
 - [ ] **다크 모드** 지원
 - [ ] **프로젝트 이미지 갤러리** — 현재 대표 이미지 1장 → 복수 이미지 슬라이드
+- [ ] **블로그 WYSIWYG 에디터** — 현재 HTML 직접 입력 → Novel 에디터 연동으로 개선
 
 > 커스텀 도메인 연결 시 `NEXT_PUBLIC_SITE_URL` 환경변수만 변경하면 SEO, OG 태그 등이 자동으로 반영되도록 설계되어 있습니다.
 
